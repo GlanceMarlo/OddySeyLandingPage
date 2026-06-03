@@ -1,0 +1,15 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+dist-ssr/
+
+# Local env & editor cruft
+*.local
+.env
+.env.*
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
