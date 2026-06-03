@@ -1,0 +1,131 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background: #0B0F1F;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI',
+    system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+
+/* Clean gradient backdrop — sits behind the WebGL stage */
+.bg-gradient {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background:
+    radial-gradient(120% 80% at 50% -10%, #14182B 0%, transparent 58%),
+    radial-gradient(90% 70% at 85% 110%, rgba(99, 102, 241, 0.14) 0%, transparent 55%),
+    linear-gradient(180deg, #0C1020 0%, #0B0F1F 100%);
+}
+
+/* Fixed WebGL canvas */
+#stage {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  display: block;
+  opacity: 0;
+  transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+#stage.is-ready { opacity: 1; }
+
+/* Legibility veil over the frames. Rather than darkening the whole frame
+   evenly (which greyed out the bike), the scrim is concentrated on the LEFT
+   — where the hero copy sits on desktop — and the BOTTOM, where it moves on
+   mobile. The center/right, where the bike lives, stays clear so it reads
+   crisply. */
+.stage-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background:
+    /* horizontal: protects left-aligned copy, clears over the bike */
+    linear-gradient(90deg, rgba(11,15,31,0.72) 0%, rgba(11,15,31,0.34) 36%, rgba(11,15,31,0.06) 62%, rgba(11,15,31,0.16) 100%),
+    /* vertical: gentle top (nav) + bottom (mobile copy / horizon) only */
+    linear-gradient(180deg, rgba(11,15,31,0.42) 0%, rgba(11,15,31,0.10) 24%, rgba(11,15,31,0.12) 64%, rgba(11,15,31,0.52) 100%),
+    /* soft vignette, eased back and biased toward the bike so it isn't greyed */
+    radial-gradient(150% 105% at 60% 48%, transparent 44%, rgba(11,15,31,0.38) 100%);
+}
+
+/* Scroll-driven ambient glow — sits above the frames, below the content.
+   A soft radial moved by transform (see App.jsx) so it drifts on scroll. */
+.stage-aurora {
+  position: fixed;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  overflow: hidden;
+}
+.stage-aurora__glow {
+  position: absolute;
+  top: -18%;
+  left: 16%;
+  width: 70vw;
+  height: 62vh;
+  background: radial-gradient(
+    closest-side,
+    rgba(99, 102, 241, 0.16) 0%,
+    rgba(99, 102, 241, 0.05) 45%,
+    transparent 75%
+  );
+  will-change: transform;
+}
+
+/* Animated scroll-cue wheel */
+@keyframes wheel {
+  0%   { opacity: 0; transform: translate(-50%, 0); }
+  40%  { opacity: 1; }
+  100% { opacity: 0; transform: translate(-50%, 12px); }
+}
+.scroll-cue__wheel::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 7px;
+  width: 3px;
+  height: 7px;
+  border-radius: 2px;
+  background: currentColor;
+  transform: translateX(-50%);
+  animation: wheel 1.6s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+}
+
+/* Blinking caret for the typewriter testimonial (`animate-blink`) */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0; }
+}
+.animate-blink {
+  animation: blink 1s step-end infinite;
+}
+
+/* Keep headings legible over bright video frames */
+.font-heading {
+  text-shadow: 0 1px 20px rgba(11, 15, 31, 0.45);
+}
+
+/* Always-visible keyboard focus (UX/accessibility: focus-states) */
+:focus-visible {
+  outline: 2px solid #818CF8; /* indigo-400 */
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .scroll-cue__wheel::after { animation: none; }
+}
